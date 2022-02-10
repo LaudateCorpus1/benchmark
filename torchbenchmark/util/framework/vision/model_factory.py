@@ -39,7 +39,7 @@ class TorchVisionModel(BenchmarkModel):
                 self.model = torch.jit.optimize_for_inference(self.model)
 
     def get_flops(self):
-        return self.flops
+        return self.flops * self.batch_size
 
     def get_module(self):
         return self.model, self.example_inputs

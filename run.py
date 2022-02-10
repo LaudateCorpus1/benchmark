@@ -89,8 +89,7 @@ def run_one_step(func, nwarmup=WARMUP_ROUNDS, model_flops=None):
 
     # if model_flops is not None, output the TFLOPs per sec
     if model_flops:
-        flops, batch_size = model_flops
-        tflops = flops * batch_size / (wall_latency / 1.0e9) / 1.0e12
+        tflops = model_flops / (wall_latency / 1.0e9) / 1.0e12
         print('{:<20} {:>20}'.format("FLOPS:", "%.4f TFLOPs per second" % tflops, sep=''))
 
 
@@ -172,7 +171,7 @@ if __name__ == "__main__":
     model_flops = None
     if args.flops:
         assert hasattr(m, "get_flops"), f"The model {args.model} does not support calculating flops."
-        model_flops = m.get_flops(), m.batch_size
+        model_flops = m.get_flops()
     if args.profile:
         profile_one_step(test)
     elif args.cudastreams:
