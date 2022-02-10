@@ -25,6 +25,9 @@ class TorchVisionModel(BenchmarkModel):
         elif test == "eval":
             self.model.eval()
 
+        self.real_input = [ torch.rand_like(self.example_inputs[0]) ]
+        self.real_output = [ torch.rand_like(self.example_outputs) ]
+
         if self.jit:
             if hasattr(torch.jit, '_script_pdt'):
                 self.model = torch.jit._script_pdt(self.model, example_inputs=[self.example_inputs, ])
@@ -42,11 +45,9 @@ class TorchVisionModel(BenchmarkModel):
         return self.model, self.example_inputs
 
     def train(self, niter=3):
-        real_input = [ torch.rand_like(self.example_inputs[0]) ]
-        real_output = [ torch.rand_like(self.example_outputs) ]
         for _ in range(niter):
             self.optimizer.zero_grad()
-            for data, target in zip(real_input, real_output):
+            for data, target in zip(self.real_input, self.real_output):
                 if self.extra_args.cudagraph:
                     self.example_inputs[0].copy_(data)
                     self.example_outputs.copy_(target)
