@@ -163,7 +163,6 @@ if __name__ == "__main__":
         exit(-1)
     print(f"Running {args.test} method from {Model.name} on {args.device} in {args.mode} mode.")
 
-    # build the model and get the chosen test method
     if args.flops:
         extra_args.append("--flops")
 
@@ -173,7 +172,7 @@ if __name__ == "__main__":
     model_flops = None
     if args.flops:
         assert hasattr(m, "get_flops"), f"The model {args.model} does not support calculating flops."
-        model_flops = m.get_flops(test=args.test)
+        model_flops = m.get_flops(), m.batch_size
     if args.profile:
         profile_one_step(test)
     elif args.cudastreams:

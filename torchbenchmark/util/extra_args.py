@@ -1,10 +1,12 @@
 import argparse
 from typing import List
 from torchbenchmark.util.backends.fx2trt import enable_fx2trt
+from torchbenchmark.util.backends.flops import enable_flops
 
 # Dispatch arguments based on model type
 def parse_args(model: 'torchbenchmark.util.model.BenchmarkModel', extra_args: List[str]) -> argparse.Namespace:
     parser = argparse.ArgumentParser()
+    parser.add_argument("--flops", action='store_true', help="enable flops counting")
     parser.add_argument("--fx2trt", action='store_true', help="enable fx2trt")
     args = parser.parse_args(extra_args)
     args.device = model.device
@@ -14,6 +16,9 @@ def parse_args(model: 'torchbenchmark.util.model.BenchmarkModel', extra_args: Li
         args.fx2trt = False
     if hasattr(model, 'TORCHVISION_MODEL') and model.TORCHVISION_MODEL:
         args.cudagraph = False
+    elif args.flops:
+        args.flops = False
+        raise NotImplementedError("Flops is only enabled for TorchVision models")
     return args
 
 def apply_args(model: 'torchbenchmark.util.model.BenchmarkModel', args: argparse.Namespace):
@@ -22,4 +27,5 @@ def apply_args(model: 'torchbenchmark.util.model.BenchmarkModel', args: argparse
         assert not args.jit, "fx2trt with JIT is not available."
         module, exmaple_inputs = model.get_module()
         model.set_module(enable_fx2trt(args.batch_size, fp16=False, model=module, example_inputs=exmaple_inputs))
-
+    if args.flops:
+        enable_flops(model)

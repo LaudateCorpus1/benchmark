@@ -35,17 +35,8 @@ class TorchVisionModel(BenchmarkModel):
                 # in order to be optimized for inference
                 self.model = torch.jit.optimize_for_inference(self.model)
 
-    # By default, FlopCountAnalysis count one fused-mult-add (FMA) as one flop.
-    # However, in our context, we count 1 FMA as 2 flops instead of 1.
-    # https://github.com/facebookresearch/fvcore/blob/7a0ef0c0839fa0f5e24d2ef7f5d48712f36e7cd7/fvcore/nn/flop_count.py
-    def get_flops(self, flops_fma=2.0):
-        if self.test == 'eval':
-            flops = self.flops / self.batch_size * flops_fma
-            return flops, self.batch_size
-        elif self.test == 'train':
-            flops = self.flops / self.batch_size * flops_fma
-            return flops, self.batch_size
-        assert False, f"get_flops() only support eval or train mode, but get {self.test}. Please submit a bug report."
+    def get_flops(self):
+        return self.flops
 
     def get_module(self):
         return self.model, self.example_inputs
