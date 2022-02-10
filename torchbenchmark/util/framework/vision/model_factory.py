@@ -22,11 +22,10 @@ class TorchVisionModel(BenchmarkModel):
             # setup optimizer and loss_fn
             self.optimizer = optim.Adam(self.model.parameters())
             self.loss_fn = torch.nn.CrossEntropyLoss()
+            self.real_input = [ torch.rand_like(self.example_inputs[0]) ]
+            self.real_output = [ torch.rand_like(self.example_outputs) ]
         elif test == "eval":
             self.model.eval()
-
-        self.real_input = [ torch.rand_like(self.example_inputs[0]) ]
-        self.real_output = [ torch.rand_like(self.example_outputs) ]
 
         if self.jit:
             if hasattr(torch.jit, '_script_pdt'):
