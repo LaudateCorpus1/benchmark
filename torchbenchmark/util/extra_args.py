@@ -1,7 +1,6 @@
 import argparse
 from typing import List
 from torchbenchmark.util.backends.fx2trt import enable_fx2trt
-from torchbenchmark.util.framework.vision.model_factory import TorchVisionModel
 
 # Dispatch arguments based on model type
 def parse_args(model: 'torchbenchmark.util.model.BenchmarkModel', extra_args: List[str]) -> argparse.Namespace:
